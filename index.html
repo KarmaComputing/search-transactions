@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Search Starling Transactions</title>
+</head>
+
+<body>
+    <h1>Search payments</h1>
+    <p>Easily search Starling statements by any string.</p>
+    <p>E.g. "ACME,2022" will search for the word "ACME" and "2022" inclusive. Search is case-sensitive.</p>
+    <input id="searchTerms" required />
+    <input type="submit" id="search" onclick="searchStatements()" />
+<script>
+
+</script>
+
+    <hr />
+    <h2>Search Results</h2>
+    <pre id="searchResult"></pre>
+
+    <script>
+    //fetch("https://balance.dokku.karmacomputing.co.uk/cashflow-last-n-months?number_of_months=15&DISPLAY_FULL_STATEMENT_DETAIL_PASSWORD=")
+    fetch("/statements.json")
+        .then(response => response.json())
+        .then(data => window.statements = data);
+
+    // Search when people press enter:
+    window.addEventListener("keydown", function(event) {
+        console.log(`${event.key}' | code='${event.code}'`);
+        if (event.code == "Enter") {
+            searchStatements();
+        }
+    }, true);
+
+    function searchStatements() {
+        results = [];
+        let searchTerms = document.getElementById("searchTerms").value;
+        for (month in window.statements) {
+            console.log(window.statements[month][Object.keys(window.statements[month])]);
+            paymentActivity = window.statements[month][Object.keys(window.statements[month])];
+            for (lineIndex in paymentActivity.statement) {
+                transactionDetail = paymentActivity.statement[lineIndex];
+                lineAsString = JSON.stringify(transactionDetail, null, 2);
+                // If ALL of the search terms are found somehwere in the line, push it to the results array
+                found = 0;
+                for (searchTermIndex in searchTerms.split(",")) {
+                    if (lineAsString.includes(searchTerms.split(",")[searchTermIndex])){
+                        found = found + 1;
+                    }
+                }
+                if (found == searchTerms.split(",").length) {
+                    results.push(lineAsString);
+                }
+                found = 0;
+            }
+        }
+
+        showSearchResults(results);
+    }
+
+    function showSearchResults(results) {
+        searchResult.innerHTML = results;
+    }
+    </script>
+</body>
+
+</html>
