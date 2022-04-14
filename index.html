@@ -9,7 +9,8 @@
     <h1>Search payments</h1>
     <p>Easily search Starling statements by any string.</p>
     <p>E.g. "ACME,2022" will search for the word "ACME" and "2022" inclusive. Search is case-sensitive.</p>
-    <input id="searchTerms" required />
+    <label for="searchTerms">Search: <input id="searchTerms" required /></label><br />
+    <label for="password">Password: </label><input id="password" type="password" placeholder="optional" /><br />
     <input type="submit" id="search" onclick="searchStatements()" />
 <script>
 
@@ -20,10 +21,14 @@
     <pre id="searchResult"></pre>
 
     <script>
-    //fetch("https://balance.dokku.karmacomputing.co.uk/cashflow-last-n-months?number_of_months=15&DISPLAY_FULL_STATEMENT_DETAIL_PASSWORD=")
-    fetch("/statements.json")
-        .then(response => response.json())
-        .then(data => window.statements = data);
+    function getStatements() {
+        password = encodeURI(document.getElementById("password").value);
+        fetch("https://balance.dokku.karmacomputing.co.uk/cashflow-last-n-months?number_of_months=15&DISPLAY_FULL_STATEMENT_DETAIL_PASSWORD="+password)
+        //fetch("/statements.json")
+            .then(response => response.json())
+            .then(data => window.statements = data);
+    }
+
 
     // Search when people press enter:
     window.addEventListener("keydown", function(event) {
@@ -32,8 +37,8 @@
             searchStatements();
         }
     }, true);
-
     function searchStatements() {
+        getStatements();
         results = [];
         let searchTerms = document.getElementById("searchTerms").value;
         for (month in window.statements) {
