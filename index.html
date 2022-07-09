@@ -23,7 +23,7 @@
     <script>
     function getStatements() {
         password = encodeURI(document.getElementById("password").value);
-        fetch("https://balance.dokku.karmacomputing.co.uk/cashflow-last-n-months?number_of_months=15&DISPLAY_FULL_STATEMENT_DETAIL_PASSWORD="+password)
+        fetch("https://balance.dokku.karmacomputing.co.uk/cashflow-last-n-months?number_of_months=15&include_this_month=1&DISPLAY_FULL_STATEMENT_DETAIL_PASSWORD="+password)
         //fetch("/statements.json")
             .then(response => response.json())
             .then(data => window.statements = data);
