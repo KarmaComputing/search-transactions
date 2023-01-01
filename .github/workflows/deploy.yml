@@ -12,14 +12,14 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - id: deploy
-      name: Deploy to Dokku
-      uses: idoberko2/dokku-deploy-github-action@v1
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        dokku-host: ${{ secrets.DOKKU_HOST }}
-        app-name: search-transactions
-        remote-branch: main
+    - name: Check out repository code
+      uses: actions/checkout@v3
+    - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+    - name: Deploy
+      run: |
+        set -x
+        mkdir -p ~/.ssh
+        ssh-keyscan ${{ secrets.DOKKU_HOST }}>> ~/.ssh/known_hosts
+        eval `ssh-agent -s`
+        ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY}}"
+        ssh dokku@${{ secrets.DOKKU_HOST }} -C "dokku git:sync --build search-transactions" https://github.com/KarmaComputing/search-transactions.git main
