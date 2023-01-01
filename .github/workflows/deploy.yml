@@ -15,6 +15,17 @@ jobs:
     - name: Check out repository code
       uses: actions/checkout@v3
     - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+    
+    - name: Create dokku app if dosent already exist using dokku apps:create
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        DOKKU_HOST: ${{ secrets.DOKKU_HOST }}
+      run: |
+        set -x
+        eval `ssh-agent -s`
+        ssh-add - <<< "$SSH_PRIVATE_KEY"
+        ssh dokku@$DOKKU_HOST -C "dokku apps:create search-transactions" | true
+
     - name: Deploy
       run: |
         set -x
