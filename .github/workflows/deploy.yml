@@ -35,4 +35,7 @@ jobs:
         ssh-keyscan ${{ secrets.DOKKU_HOST }}>> ~/.ssh/known_hosts
         eval `ssh-agent -s`
         ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY}}"
-        ssh dokku@${{ secrets.DOKKU_HOST }} -C "dokku git:sync --build search-transactions" https://github.com/KarmaComputing/search-transactions.git main
+        ssh dokku@${{ secrets.DOKKU_HOST }} -C "dokku git:sync --build search-transactions https://github.com/KarmaComputing/search-transactions.git main"
+        ssh dokku@${{ secrets.DOKKU_HOST }} -C "letsencrypt:enable search-transactions"
+        ssh dokku@${{ secrets.DOKKU_HOST }} -C "letsencrypt:cron-job --add"
+
